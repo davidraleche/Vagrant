@@ -30,12 +30,6 @@ echo "--- Installing and configuring Xdebug ---"
 sudo apt-get install -y php7.1-fpm 
  
  
-#cat << EOF | sudo tee -a /etc/php7/mods-available/xdebug.ini
-#xdebug.scream=1
-#xdebug.cli_color=1
-#xdebug.show_local_vars=1
-#EOF
- 
 echo "--- Enabling mod-rewrite ---"
 sudo a2enmod rewrite
  
@@ -46,11 +40,7 @@ sudo a2ensite default-ssl
 echo "--- Setting document root ---"
 sudo rm -rf /var/www/html
 sudo ln -fs /vagrant/public_html /var/www/html
-sudo ln -fs /vagrant/protected /var/www/protected
- 
-sudo mkdir -p /data/protected
-sudo ln -fs /vagrant/protected/.htpasswd /data/protected/.htpasswd
- 
+  
 echo "--- What developer codes without errors turned on? Not you, master. ---"
  
 sed -i "s/error_reporting = .*/error_reporting = E_ALL ^ E_DEPRECATED/"  /etc/php/7.1/apache2/php.ini 
@@ -59,24 +49,15 @@ sed -i "s/display_errors = .*/display_errors = On/"  /etc/php/7.1/apache2/php.in
  
 sed -i "s/short_open_tag = Off/short_open_tag = On/"  /etc/php/7.1/apache2/php.ini 
  
-sed -i 's/AllowOverride None/AllowOverride All/' /etc/apache2/apache2.conf
- 
- 
-#sed -i "s/var\/www/var\/www\/html/" /etc/apache2/sites-enabled/000-default.conf
-#sed -i "s/var\/www/var\/www\/html/" /etc/apache2/sites-enabled/default-ssl.conf
- 
+sed -i 's/AllowOverride None/AllowOverride All/' /etc/apache2/apache2.conf 
  
 sed -i 's/AllowOverride None/AllowOverride All/' /etc/apache2/sites-enabled/000-default.conf
 sed -i 's/AllowOverride None/AllowOverride All/' /etc/apache2/sites-enabled/default-ssl.conf
  
-#sed -i "/DocumentRoot \/var\/www\/html/a \        RewriteEngine On" /etc/apache2/sites-available/000-default.conf
 sed -i "/DocumentRoot \/var\/www\/html/a \        RewriteEngine On" /etc/apache2/sites-enabled/000-default.conf
- 
- 
-#sed -i "/RewriteEngine On/a \        RewriteRule \^(.\*)$ https:\/\/%{HTTP_HOST}\$1 \[R=301,L\]" /etc/apache2/sites-available/000-default.conf
+
 sed -i "/RewriteEngine On/a \        RewriteRule \^(.\*)$ https:\/\/%{HTTP_HOST}\$1 \[R=301,L\]" /etc/apache2/sites-enabled/default-ssl.conf
- 
- 
+  
 echo "--- Installing databases ---"
 sudo /vagrant/vagrant/db.sh
  
